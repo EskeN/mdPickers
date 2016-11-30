@@ -907,7 +907,10 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
             function updateTime(time) {
                 var value = moment(time, angular.isDate(time) ? null : scope.timeFormat, true);
                 var strValue;
-                if(scope.timeFormat.indexOf('a') !== -1 && time.indexOf('am') === -1 && time.indexOf('pm') === -1) {
+                if (!(time instanceof Date)
+                    && scope.timeFormat.indexOf('a') !== -1
+                    && time.indexOf('am') === -1
+                    && time.indexOf('pm') === -1) {
                     strValue = time;
                 } else {
                     strValue = value.format(scope.timeFormat);
