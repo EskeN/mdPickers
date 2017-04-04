@@ -811,7 +811,7 @@ module.provider("$mdpTimePicker", function() {
                     time: time,
                     autoSwitch: options.autoSwitch
                 },
-                skipHide: true
+                multiple: true
             });
         };
     
