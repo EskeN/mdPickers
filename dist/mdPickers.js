@@ -800,8 +800,18 @@ module.provider("$mdpTimePicker", function() {
                                     
                                     '<md-dialog-actions layout="row">' +
 	                                	'<span flex></span>' +
-                                        '<md-button ng-click="timepicker.cancel()" aria-label="' + LABEL_CANCEL + '">' + LABEL_CANCEL + '</md-button>' +
-                                        '<md-button ng-click="timepicker.confirm()" class="md-primary" aria-label="' + LABEL_OK + '">' + LABEL_OK + '</md-button>' +
+                                        '<md-button type="button"' +
+                                            'data-ng-click="timepicker.cancel()"' +
+                                            'class="md-raised"' +
+                                            'aria-label="' + LABEL_CANCEL + '">' +
+                                                LABEL_CANCEL +
+                                            '</md-button>' +
+                                        '<md-button type="button"' +
+                                            'data-ng-click="timepicker.confirm()"' +
+                                            'class="md-raised md-accent"' +
+                                            'aria-label="' + LABEL_OK + '">' +
+                                                LABEL_OK +
+                                        '</md-button>' +
                                     '</md-dialog-actions>' +
                                 '</div>' +
                             '</md-dialog-content>' +
@@ -811,7 +821,8 @@ module.provider("$mdpTimePicker", function() {
                     time: time,
                     autoSwitch: options.autoSwitch
                 },
-                multiple: true
+                multiple: true,
+                focusOnOpen: false
             });
         };
     
@@ -930,14 +941,17 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
                 
                 ngModel.$render();
             }
-                
+
+            var mdpTimePickerPromise = null;
             scope.showPicker = function(ev) {
-                $mdpTimePicker(ngModel.$modelValue, {
-                    targetEvent: ev,
-                    autoSwitch: scope.autoSwitch
-                }).then(function(time) {
-                    updateTime(time, true);
-                });
+                if (!mdpTimePickerPromise || mdpTimePickerPromise.$$state.status >= 1) {
+                    mdpTimePickerPromise = $mdpTimePicker(ngModel.$modelValue, {
+                        targetEvent: ev,
+                        autoSwitch: scope.autoSwitch
+                    }).then(function (time) {
+                        updateTime(time, true);
+                    });
+                }
             };
             
             function onInputElementEvents(event) {
@@ -960,7 +974,7 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
         require: 'ngModel',
         scope: {
             "timeFormat": "@mdpFormat",
-            "autoSwitch": "=?mdpAutoSwitch",
+            "autoSwitch": "=?mdpAutoSwitch"
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
             scope.format = scope.format || "HH:mm";
